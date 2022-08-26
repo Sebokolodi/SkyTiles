@@ -199,14 +199,25 @@ def HPX_in_degrees(HPX, HPX_wcs):
     hpx_ra, hpx_dec = [], []
     crpix_ra, crpix_dec = [], []
 
+    boundaries_ra = []
+    boundaries_dec = []
+    
     for SBs_pixels in HPX:
     
-        hpx2lon = hp.healpix_to_lonlat(SBs_pixels) * u.deg
-        HPX_RA, HPX_DEC = hpx2lon.value
-        crpix_RA, crpix_DEC = HPX_wcs.wcs_world2pix(HPX_RA, HPX_DEC, 1)
+        SBs_pixels_shift = SBs_pixels + [1] 
+        #somehow the HPX are offset by 1 pixel. But the pixel ID and RA/DEC deg are okay. Just the ref pix.
         
+        hpx2lon = hp.healpix_to_lonlat(SBs_pixels) * u.deg
+        hpx2lon_shift = hp.healpix_to_lonlat(SBs_pixels_shift) * u.deg
+        
+        HPX_RA, HPX_DEC = hpx2lon.value
+        HPX_RA_shift, HPX_DEC_shift = hpx2lon_shift.value
+        
+        crpix_RA, crpix_DEC = HPX_wcs.wcs_world2pix(HPX_RA_shift, HPX_DEC_shift, 0)
+                
         crpix_ra.append(-crpix_RA)
         crpix_dec.append(-crpix_DEC)
+        
         hpx_ra.append(HPX_RA)
         hpx_dec.append(HPX_DEC)
     
