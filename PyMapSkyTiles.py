@@ -11,6 +11,7 @@ import glob
 import json
 import sys
 import argparse
+import csv
 
 
 """
@@ -281,13 +282,17 @@ if __name__ == "__main__":
     HPX_Pixels = []
     HPX_ID = []
 
+    print(footprints)
     for foot, footprint in enumerate(footprints):
+         
 
         if extension == 'reg':
+
             footprint_region = pyregion.open(footprint)
             x_deg = [r.coord_list[0] for r in footprint_region]
             y_deg = [r.coord_list[1] for r in footprint_region]
-        
+
+            
         if extension == 'txt':
             footprint_region = pd.read_csv(footprint, header=None,  sep=")")
             x_deg = [ footprint_region[1][i].split(',')[0] for i in range(number_of_beams)]
@@ -313,39 +318,23 @@ if __name__ == "__main__":
     crpix_ra, crpix_dec, hpx_ra, hpx_dec = HPX_in_degrees(HPX_Pixels, HPX_wcs)
 
     for i in range(len(HPX_ID)):        
-    
-        print(footprints_ID[i])
-        tile_output_filename = outfile_json_prefix + '-TileConfig-%s.xlsx'%footprints_ID[i]
-        csv_tile_output =  outfile_json_prefix + '-TileConfig-%s.csv'%footprints_ID[i]
-        
-        with pd.ExcelWriter(tile_output_filename) as writer:
-        
-            data = {'PIXELS': HPX_Pixels[i].tolist() ,
-                'CRPIX_RA' : crpix_ra[i].tolist(),
-                'CRPIX_DEC' : crpix_dec[i].tolist(),
-                'CRVAL_RA [deg]'  : hpx_ra[i].tolist(),
-                'CRVAL_DEC [deg]' : hpx_dec[i].tolist()}
-            
-            df = pd.DataFrame(data, columns = ['PIXELS', 'CRPIX_RA', 'CRPIX_DEC', 
-                                              'CRVAL_RA [deg]', 'CRVAL_DEC [deg]'])
-            df.to_excel(writer, sheet_name='%s'%footprints_ID[i])
-            df.to_csv(csv_tile_output, index=False)
-    
-            column_width = 15
-            workbook  = writer.book
-            worksheet = writer.sheets['%s'%footprints_ID[i]]
-            cell_format = workbook.add_format({'font_name':'Calibri', 'font_size':10})
-            worksheet.set_column(0, 5, column_width, cell_format)
-            header_format = workbook.add_format({
-                    'bold': True,
-                    'text_wrap': True,
-                    'valign': 'top',
-                    'fg_color': '#D7E4BC',
-                    'border': 1})
-            for col_num, value in enumerate(df.columns.values):
-                worksheet.write(0, col_num + 1, value, header_format)
-     
 
+        csv_tile_output =  outfile_json_prefix + '_%s.csv'%footprints_ID[i]
+        
+        with open(csv_tile_output, 'w', newline='') as f:
+            writer = csv.writer(f)
+            
+            data = [tuple(HPX_Pixels[i].tolist()),
+                    tuple(crpix_ra[i].tolist()),
+                    tuple(crpix_dec[i].tolist()),
+                    tuple(hpx_ra[i].tolist()),
+                    tuple(hpx_dec[i].tolist())]
+            data_zip = zip(*data)
+            csv_header  = ['PIXELS', 'CRPIX_RA', 'CRPIX_DEC', 'CRVAL_RA [deg]', 'CRVAL_DEC [deg]']
+            writer.writerow(csv_header)
+            writer.writerows(data_zip)
+  
+   
     HPX_PIXELS = numpy.unique(numpy.hstack(HPX_Pixels)) #all HPX tiles.
  
     SBsID = []
@@ -358,55 +347,47 @@ if __name__ == "__main__":
                 SBs_HPX.append((hpxs))
                 SBsID.append(SBid)    
             
-    repeat_tiles_outfile = outfile_json_prefix + '-TileRepeat.xlsx'
-    csv_repeat_tiles = outfile_json_prefix + '-TileRepeat.csv'
+    csv_repeat_tiles = outfile_json_prefix + '_REPEAT.csv'
     
-    with pd.ExcelWriter(repeat_tiles_outfile) as writer:
+    with open(csv_repeat_tiles, 'w', newline='') as f:
+        writer = csv.writer(f)
+        
         data = []
         j = 0 
         for hpx in numpy.unique(SBs_HPX):
-        
+
             count = SBs_HPX.count(hpx)
-            if count is 1:
+
+            if count == 1:
                 j+=1
                 
-            if count is 2:
+            if count == 2:
                 ind = numpy.where(hpx == SBs_HPX)[0].tolist()
                 SBs_data = numpy.asarray(SBsID)[ind]
                 SBs_temp = SBs_data.tolist() 
+ 
                 data.append([hpx, SBs_temp[0], SBs_temp[1]])
         
-            if count is 3:
+            if count == 3:
                 ind = numpy.where(hpx == SBs_HPX)[0].tolist()
                 SBs_data = numpy.asarray(SBsID)[ind]
                 SBs_temp = SBs_data.tolist()                         
                 data.append([hpx, SBs_temp[0], SBs_temp[1], SBs_temp[2]])
         
-            if count is 4:
+            if count == 4:
                 ind = numpy.where(hpx == SBs_HPX)[0].tolist()
                 SBs_data = numpy.asarray(SBsID)[ind]
                 SBs_temp = SBs_data.tolist()                                       
                 data.append([hpx, SBs_temp[0], SBs_temp[1], SBs_temp[2], SBs_temp[3]])
-            
-        df2 = pd.DataFrame(data, columns = ['PIXEL', 'SB1', 'SB2', 'SB3', 'SB4'])
-        df2.to_excel(writer, sheet_name='Tiles')
-        df2.to_csv(csv_repeat_tiles, index=False)
+        
+        #data_zip = zip(*data)
+        csv_header = ['PIXEL', 'SB1', 'SB2', 'SB3', 'SB4']
+        writer.writerow(csv_header)
+        writer.writerows(data)    
     
-        column_width = 12
-        workbook  = writer.book
-        worksheet = writer.sheets['Tiles']
-        cell_format = workbook.add_format({'font_name':'Calibri', 'font_size':10})
-        worksheet.set_column(0, 5, column_width, cell_format)
-        header_format = workbook.add_format({
-               'bold': True,
-               'text_wrap': True,
-               'valign': 'top',
-               'fg_color': '#D7E4BC',
-               'border': 1})
-        for col_num, value in enumerate(df2.columns.values):
-            worksheet.write(0, col_num + 1, value, header_format)
+    
     
     if generate_ds9regions:
         generate_DS9_polygons(healpix_pixel=HPX_PIXELS, nside=Nside, outname_prefix=outfile_json_prefix)
-
+    
 
