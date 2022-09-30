@@ -361,7 +361,7 @@ if __name__ == "__main__":
             if count == 1:
                 j+=1
                 
-            if count > 2:
+            if count >= 2:
                 ind = numpy.where(hpx == SBs_HPX)[0].tolist()
                 SBs_data = numpy.asarray(SBsID)[ind]
                 SBs_temp = SBs_data.tolist() 
