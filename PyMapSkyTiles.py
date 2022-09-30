@@ -25,9 +25,9 @@ import csv
         2. Tile setting. HealPix Nside, image CDELT. See input json file 'AllSky-TileConfig.json.
 
     Output:
-        1. A xlsx and csv file containing a list tile IDs and the corresponding SBs. This file is used 
+        1. A csv file containing a list tile IDs and the corresponding SBs. This file is used 
            to identify HealPix pixels that finds contribution from multiple SBs. 
-        2. A xlsv and csv file for each SB containg pixes parameters (CRPIX) used for generating tiles.    
+        2. A csv file for each SB containg pixes parameters (CRPIX) used for generating tiles.    
      
 Author: Lerato
 
