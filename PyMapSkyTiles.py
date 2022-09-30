@@ -361,30 +361,17 @@ if __name__ == "__main__":
             if count == 1:
                 j+=1
                 
-            if count == 2:
+            if count > 2:
                 ind = numpy.where(hpx == SBs_HPX)[0].tolist()
                 SBs_data = numpy.asarray(SBsID)[ind]
                 SBs_temp = SBs_data.tolist() 
- 
-                data.append([hpx, SBs_temp[0], SBs_temp[1]])
-        
-            if count == 3:
-                ind = numpy.where(hpx == SBs_HPX)[0].tolist()
-                SBs_data = numpy.asarray(SBsID)[ind]
-                SBs_temp = SBs_data.tolist()                         
-                data.append([hpx, SBs_temp[0], SBs_temp[1], SBs_temp[2]])
-        
-            if count == 4:
-                ind = numpy.where(hpx == SBs_HPX)[0].tolist()
-                SBs_data = numpy.asarray(SBsID)[ind]
-                SBs_temp = SBs_data.tolist()                                       
-                data.append([hpx, SBs_temp[0], SBs_temp[1], SBs_temp[2], SBs_temp[3]])
-        
-        #data_zip = zip(*data)
-        csv_header = ['PIXEL', 'SB1', 'SB2', 'SB3', 'SB4']
+                data.append( numpy.hstack([hpx, SBs_temp]).tolist() )
+               
+        maximum_number_SBs = max([len(n) for n in data])
+        csv_header = numpy.hstack(['PIXEL', ['SB%d'%i for i in range(1, maximum_number_SBs)]]).tolist()
+
         writer.writerow(csv_header)
         writer.writerows(data)    
-    
     
     
     if generate_ds9regions:
