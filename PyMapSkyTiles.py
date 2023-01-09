@@ -86,8 +86,17 @@ def points_within_circle(x0, y0, radius, num_points=4):
     else:
         x_corners =  radius * numpy.cos(angle) + x0
         y_corners =  radius * numpy.sin(angle) + y0
+        
+    
+    x_corners = numpy.asarray(x_corners)
+    y_corners = numpy.asarray(y_corners)
+    
+    x_corners = x_corners.flatten()
+    y_corners = y_corners.flatten()
+     
+    ind = numpy.where(abs(y_corners) <=90)[0]
             
-    return x_corners, y_corners
+    return x_corners[ind], y_corners[ind]
 
 
 def get_HealPix_Tiles(ra_deg, dec_deg):
@@ -97,6 +106,7 @@ def get_HealPix_Tiles(ra_deg, dec_deg):
     SB_index = hp.lonlat_to_healpix(ra_deg * u.deg, dec_deg * u.deg, return_offsets=False)
     SB_index_unique = numpy.unique(SB_index) 
     
+   
     return SB_index_unique
 
 
@@ -221,7 +231,7 @@ def HPX_in_degrees(HPX, HPX_wcs):
         
         hpx_ra.append(HPX_RA)
         hpx_dec.append(HPX_DEC)
-    
+             
     return crpix_ra, crpix_dec, hpx_ra, hpx_dec
 
 
@@ -282,7 +292,7 @@ if __name__ == "__main__":
     HPX_Pixels = []
     HPX_ID = []
 
-    print(footprints)
+    #print(footprints)
     for foot, footprint in enumerate(footprints):
          
 
@@ -291,6 +301,7 @@ if __name__ == "__main__":
             footprint_region = pyregion.open(footprint)
             x_deg = [r.coord_list[0] for r in footprint_region]
             y_deg = [r.coord_list[1] for r in footprint_region]
+            
 
             
         if extension == 'txt':
@@ -316,14 +327,16 @@ if __name__ == "__main__":
     HPX_wcs = WCS(HPX_hdr)
     
     crpix_ra, crpix_dec, hpx_ra, hpx_dec = HPX_in_degrees(HPX_Pixels, HPX_wcs)
+   
 
+    
     for i in range(len(HPX_ID)):        
 
         csv_tile_output =  outfile_json_prefix + '_%s.csv'%footprints_ID[i]
         
         with open(csv_tile_output, 'w', newline='') as f:
             writer = csv.writer(f)
-            
+
             data = [tuple(HPX_Pixels[i].tolist()),
                     tuple(crpix_ra[i].tolist()),
                     tuple(crpix_dec[i].tolist()),
@@ -352,14 +365,20 @@ if __name__ == "__main__":
     with open(csv_repeat_tiles, 'w', newline='') as f:
         writer = csv.writer(f)
         
+        
         data = []
+        data_single = []
         j = 0 
         for hpx in numpy.unique(SBs_HPX):
 
             count = SBs_HPX.count(hpx)
 
-            if count == 1:
-                j+=1
+            #if count == 1:
+            #    j+=1
+            #    inds = numpy.where(hpx == SBs_HPX)[0].tolist()
+            #    SBs_data_single = numpy.asarray(SBsID)[inds]
+            #    SBs_temp_single = SBs_data_single.tolist()
+            #    data_single.append( numpy.hstack([hpx, SBs_temp_single]).tolist())
                 
             if count >= 2:
                 ind = numpy.where(hpx == SBs_HPX)[0].tolist()
@@ -372,8 +391,33 @@ if __name__ == "__main__":
 
         writer.writerow(csv_header)
         writer.writerows(data)    
+  
+  
+    csv_single_tiles = outfile_json_prefix + '_SINGLE.csv' 
     
+    with open(csv_single_tiles, 'w', newline='') as s:
+        writer_single = csv.writer(s)
+        
+        
+        data_single = []
+        j = 0 
+        for hpx in numpy.unique(SBs_HPX):    
+            count = SBs_HPX.count(hpx)
+
+            if count == 1:
+                j+=1
+                inds = numpy.where(hpx == SBs_HPX)[0].tolist()
+                SBs_data_single = numpy.asarray(SBsID)[inds]
+                SBs_temp_single = SBs_data_single.tolist()
+                data_single.append( numpy.hstack([hpx, SBs_temp_single]).tolist())
+        
     
+        maximum_number_SBs_single = max([len(n) for n in data_single])
+        csv_header_single = numpy.hstack(['PIXEL', ['SB%d'%i for i in range(1, maximum_number_SBs_single)]]).tolist()
+
+        writer_single.writerow(csv_header_single)
+        writer_single.writerows(data_single) 
+
     if generate_ds9regions:
         generate_DS9_polygons(healpix_pixel=HPX_PIXELS, nside=Nside, outname_prefix=outfile_json_prefix)
     
