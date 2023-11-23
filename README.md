@@ -58,8 +58,8 @@
 		the form: 'output_prefix_TileConfig_SBID.csv'
     ii) csv file containing tile IDs of the tiles completed by a single SB.  The output 
 		name takes the form: 'output_prefix_SINGLE.csv'. Note that this file is only derived
-            when multiple SBs (footprints) are provided via run_all_footprints or footprints_files. The file 
-		will be empty if only one SB is evaluated or if the SBs do not overlap. 
+            when multiple SBs (footprints) are provided via run_all_footprints or footprints_files. 
+	        The file will be empty if only one SB is evaluated or if the SBs do not overlap. 
     iii) csv file containing tile IDs of the tiles needing more than a single SB to be complete. 
             The output name takes the form: 'output_prefix_REPEAT.csv'. This file will 
 	        only be generated when multiple SBs are provided. See (ii).
@@ -71,8 +71,9 @@
          path: 
          name: 
 		 
-    input_tile_config: CSV file containing tile ID, CRPIX1/2 information. Specify the path and name to these files (below). 
-	            Note: The input csv file must take the format: 'filename_SBID.csv'. We use this file to also extract SBID. 
+    input_tile_config: CSV file containing tile ID, CRPIX1/2 information. Specify the path and name to 
+                       these files (below). Note: The input csv file must take the format: 'filename_SBID.csv'. 
+		       We use this file to also extract SBID. 
         path:
         SB_tile:
    
