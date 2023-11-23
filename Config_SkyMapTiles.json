@@ -1,14 +1,14 @@
 {
-        "path_footprints": "footprints/possum/footprints/",
+        "path_footprints": "POSSUM/footprints/shapley/",
         "run_all_footprints":true,
-        "footprint_files": ["footprintOutput-sb10040-POSSUM_2156-54.txt", "footprintOutput-sb10007-POSSUM_2126-54.txt"],
+        "footprint_files": ["EMU_2156-60.reg"],
         "HPX_nside": 32,
         "tile_naxis": 2048,
         "tile_cdelt": 0.0009710633897,
-        "beam_radius": 1.2,
+        "beam_radius": 0.7,
         "beam_sample_points": 16,
         "number_of_beams": 36,
-        "outfile_prefix": "PoSSUM",
-        "generate_ds9regions": true
+        "outfile_prefix": "POSSUM/tilemap/shapley_0.7deg/PSM-shapley",
+        "generate_ds9regions": false
             
 }

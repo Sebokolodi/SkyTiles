@@ -116,6 +116,7 @@ def generate_DS9_polygons(healpix_pixel, nside, outname_prefix ):
        Option function: for the extracted tiles, it generates the 
        ds9 region files.
     """  
+    print('Generating region files')
 
     regions = []
     centers = []
@@ -352,7 +353,9 @@ if __name__ == "__main__":
  
     SBsID = []
     SBs_HPX = []
-    
+
+    if generate_ds9regions:
+        generate_DS9_polygons(healpix_pixel=HPX_PIXELS, nside=Nside, outname_prefix=outfile_json_prefix)    
    
     for hpxs in HPX_PIXELS:
         for SBid in HPX_ID:
@@ -418,7 +421,6 @@ if __name__ == "__main__":
         writer_single.writerow(csv_header_single)
         writer_single.writerows(data_single) 
 
-    if generate_ds9regions:
-        generate_DS9_polygons(healpix_pixel=HPX_PIXELS, nside=Nside, outname_prefix=outfile_json_prefix)
+
     
 
