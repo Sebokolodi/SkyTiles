@@ -1,56 +1,73 @@
 # SkyTiles
 
-#### Purpose : Extract tiles for a specific SB observation.
+#### Purpose : Extract tiles IDs for specific SBs and generate tile images.
 
-#### Definitions of Content: 
+#### Definitions of Scripts: 
 
-	PyMapSkyTiles.py : Used for extracting tile locations and IDs for a specific SB, and outputs the csv file 
-	                     needed for tiling. The csv file contains CRPIX1/2 values.  
+	PyMapSkyTiles.py : Used for extracting tile locations (coordinates in degrees and pixels) 
+                       and tile HPX IDs for a specific SB, 
+                       and outputs csv files needed for creating tiles.  
+			   It outputs 3 csv files. One csv contains the coordinates  
+                       CRVAL1/2 and CRPIX1/2 values of the tiles (this actually the file
+		           used for tilling, others are used for other purposes), 
+                       the second file contains HPX IDs of tiles that are 
+                       completely filled by one SB (we refer to these as 'SINGLE'),
+			   and the last file contains tiles IDs requiring multiple 
+                       SBs to be complete. 
 
-	PyTiling.py      : The actual script for generating the tile images and the corresponding header files.   
+	PyTiling.py      : The actual script for generating the tile images.   
 	
-	Config_SkyMapTiles.json: Input to PyMapSkyTiles.py.  
+	Config_SkyMapTiles.json: Input to PyMapSkyTiles.py. This file contains the configurations 
+                             needed for running PyMapSkyTiles.py, such as directory,
+				 path to footprints, primary beam size, etc. See below for details. 
 	
-	Config_Tiling.json : Input to PyTiling.py.   
-	
-	NB: With these Json files, you are able to specify the path and filenames to i) footprints, ii)   
-	images, and iii) csv files, also provide tile parameters such as size (naxis), image sample size (cdelt),  
-	Healpix nside, etc.   
+	Config_Tiling.json : Input to PyTiling.py. Works the same as the above json file but this is
+                         is specifically for configuring PyTilling.py.   
 
 #### The scripts are executed as follows:
 	
 	
-							#./PyMapSkyTiles.py -j Config_SkyMapTiles.py
+	#./PyMapSkyTiles.py -j Config_SkyMapTiles.py
 							
-							#./PyTiling.py -j Config_Tiling.py
+	#./PyTiling.py -j Config_Tiling.py
 							
 
 #### Config_SkyMapTiles.json input Json Definitions:
 
-	path_footprints   : Path to footprints.
-    run_all_footprints: true/false. If true, look inside path_footprints and extract Tile information for all footprints. 
+    path_footprints   : Path to footprints.
+    run_all_footprints: true/false. If true, look inside path_footprints and extract Tile information
+                        for all footprints inside this path/directory. 
     footprint_files   : If run_all_footprints is false, then specify a specific footprint file(s). 
-    HPX_nside         : Healpix NSIDE 
-    tile_naxis        : Tile size (tile_naxis by tile_naxis).
-    tile_cdelt        : Tile pixel size.
-    beam_radius       : Size of the observation's primary beam.
+                        If run_all_footprints is false and no footprint_files is given, the code will
+			    break.
+    HPX_nside         : Healpix NSIDE.  
+    tile_naxis        : Tile size (NAXIS of a tile. A value provided will be used for both naxis1 and 2).
+    tile_cdelt        : Tile pixel size (in degrees).
+    beam_radius       : Size of the observation's primary beam (the radius, in degrees).
     beam_sample_points: Sampling the circumference of the beam. Used for determining pixel locations 
-	                    (ensures that no tile ID is missed).
-    number_of_beams   : The number of beams per SB. Most relevant for phased arrays. 
-    outfile_prefix    : The prefix name to use for the output csvs files.
-    generate_ds9regions: if true, generate a region file for the SB.
+	                    (ensures that no tile ID is missed). 
+    number_of_beams   : The number of beams per SB. Most relevant for phased arrays. For POSSUM, we 
+                        have 36 beams.
+    outfile_prefix    : The prefix name to use for the output csvs files (include a path also, if not the 
+                        files will be stored in your current directory).
+    generate_ds9regions: if true, generate a DS9-suitable region file for the SB. 
      
-	Output of executing PyMapSkyTiles.py: 
-		i) csv file for each SB containing tile IDs, CRPIX1/2 and CRVAL1/2.The output name takes 
+    
+    Output of executing PyMapSkyTiles.py: 
+    i) csv file for each SB containing tile IDs, CRPIX1/2 and CRVAL1/2.The output name takes 
 		the form: 'output_prefix_TileConfig_SBID.csv'
-        ii) one csv file containing all tile IDs corresponding to the input footprints. This file 
-		is important to note which tiles consists of contribution from multiple SBs.  The output 
-		name takes the form: 'output_prefix_TileRepeat_SBID.csv'.
+    ii) csv file containing tile IDs of the tiles completed by a single SB.  The output 
+		name takes the form: 'output_prefix_SINGLE.csv'. Note that this file is only derived
+            when multiple SBs (footprints) are provided via run_all_footprints or footprints_files. The file 
+		will be empty if only one SB is evaluated or if the SBs do not overlap. 
+    iii) csv file containing tile IDs of the tiles needing more than a single SB to be complete. 
+            The output name takes the form: 'output_prefix_REPEAT.csv'. This file will 
+	        only be generated when multiple SBs are provided. See (ii).
 									  
 
 #### Config_Tiling.json input Json Definitions:
 
-	input_image: Information about the input image. Insert path and name (below).
+     input_image: Information about the input image. Insert path and name (below).
          path: 
          name: 
 		 
@@ -63,9 +80,9 @@
         path : Path to save the tiles and headers.
         naxis: Tile size should be the same as tile_naxis in Config_SkyMapTiles.json.
         cdelt: Tile pixel sample. Should be the same as tile_cdelt in Config_SkyMapTiles.json.
-        fits_prefix: The prefix to give the resulting tile images and headers.         
-			The output tiles/headers will take the form: 
-			'fits_prefix-stokes-SBID-header-TileID.hdr' and 'fits_prefix-stokes-SBID-tile-TileID.fits.     
+        fits_prefix: The prefix to give the resulting tile images.         
+			The output tile names take the form: 
+			'fits_prefix-SBID-TileID.fits.     
 			The stokes parameter is obtained from the input fits header with crval3/4: 1 is I, 
 			2 is Q, 3 is U and 4 is V.
 					 
