@@ -38,12 +38,14 @@
 #### The scripts are executed as follows:
 	
 	
-	#./PyMapSkyTiles.py -j Config_SkyMapTiles.py
+	#./PyMapSkyTiles.py -j Config_SkyMapTiles.json
 							
-	#./PyTiling.py -j Config_Tiling.py
+	#./PyTiling.py -j Config_Tiling.json	
+  
+    #./rename_tiles.py -i image.fits -pf PSM_pilot1 -v v2 -mfs
 							
 
-#### Config_SkyMapTiles.json Input  Definitions:
+#### Config_SkyMapTiles.json Input Definitions and PyMapSkyTiles.py outputs:
 
     path_footprints   : Path to footprints.
     run_all_footprints: true/false. If true, look inside path_footprints and extract tile 
