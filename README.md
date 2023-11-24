@@ -22,7 +22,8 @@
 
     casa_tiling.py   : The actual script for generating tile images. This script uses CASA
 	                  (previously known as CASAPY) to generate the tiles. CASA function 
-		          called imregrid is used for tiling (interpolation='cubic').      
+		          called imregrid is used for tiling (interpolation='cubic'). CASA
+	                  works wlel with our radio data.
 
     renaming_tiles.py: Script used to rename tiles fits data to a format agreed upon by the team:
 	                   prefix_cenfreq_resol_RADEC_tileID_Stokes_version.fits
