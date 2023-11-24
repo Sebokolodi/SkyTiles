@@ -17,8 +17,8 @@
                        SBs to be complete. 
 
 	PyTiling.py      : The actual script for generating tile images. This script creates 
-                        tiles using Montage. After several test, we wouldn't recommend using this 
-			  version for radio images, instead use CASA tiling (casa_tiling.py).      
+                        tiles using Montage. After several test, we wouldn't recommend using 
+			    Montage for radio images, instead use CASA tiling (casa_tiling.py).      
 
     casa_tiling.py   : The actual script for generating tile images. This script uses CASA
 	                  (previously known as CASAPY) to generate the tiles. CASA function 
