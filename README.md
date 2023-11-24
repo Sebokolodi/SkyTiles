@@ -1,6 +1,7 @@
 # SkyTiles
 
 #### Purpose : Extract tiles IDs for specific SBs and generate tile images.
+    NB: The scripts are currently suitable for ASKAP fits data. 
 
 #### Definitions of Scripts: 
 
@@ -15,7 +16,16 @@
 			   and the last file contains tiles IDs requiring multiple 
                        SBs to be complete. 
 
-	PyTiling.py      : The actual script for generating the tile images.   
+	PyTiling.py      : The actual script for generating tile images. This script creates 
+                        tiles using Montage. After several test, we wouldn't recommend using this 
+			  version for radio images, instead use CASA tiling (casa_tiling.py).      
+
+    casa_tiling.py   : The actual script for generating tile images. This script uses CASA
+	                  (previously known as CASAPY) to generate the tiles. CASA function 
+		          called imregrid is used for tiling (interpolation='cubic').      
+
+    renaming_tiles.py: Script used to rename tiles fits data to a format agreed upon by the team:
+	                   prefix_cenfreq_resol_RADEC_tileID_Stokes_version.fits
 	
 	Config_SkyMapTiles.json: Input to PyMapSkyTiles.py. This file contains the configurations 
                              needed for running PyMapSkyTiles.py, such as directory,
