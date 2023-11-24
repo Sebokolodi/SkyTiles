@@ -100,5 +100,14 @@
 			The stokes parameter is obtained from the input fits header
                     with crval3/4: 1 is I, 2 is Q, 3 is U and 4 is V.
 					 
-					 
+
+#### Rename_tiles Input Definitions:
+
+    -i:   user must provide path and name of input image to rename.
+    -pf:  user must provide path and prefix name to use for the output image. 
+          If no path is provided, the fits file will be saved in the current directory.
+    -v:   You can specify the version number of the output e.g v1 for version 1.
+    -mfs: If file is MFS, you need to use this paramter indicate this. This ensures that
+           the extension 't0' is added to the file name, and that the central frequency is 
+           calculated accurately.
 
