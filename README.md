@@ -32,24 +32,25 @@
 	#./PyTiling.py -j Config_Tiling.py
 							
 
-#### Config_SkyMapTiles.json input Json Definitions:
+#### Config_SkyMapTiles.json Input  Definitions:
 
     path_footprints   : Path to footprints.
-    run_all_footprints: true/false. If true, look inside path_footprints and extract Tile information
-                        for all footprints inside this path/directory. 
+    run_all_footprints: true/false. If true, look inside path_footprints and extract tile 
+                        information for all footprints inside this path/directory. 
     footprint_files   : If run_all_footprints is false, then specify a specific footprint file(s). 
                         If run_all_footprints is false and no footprint_files is given, the code will
 			    break.
     HPX_nside         : Healpix NSIDE.  
-    tile_naxis        : Tile size (NAXIS of a tile. A value provided will be used for both naxis1 and 2).
+    tile_naxis        : Tile size (NAXIS of a tile. A value provided will be used for both naxis1 
+                        and 2).
     tile_cdelt        : Tile pixel size (in degrees).
     beam_radius       : Size of the observation's primary beam (the radius, in degrees).
-    beam_sample_points: Sampling the circumference of the beam. Used for determining pixel locations 
-	                    (ensures that no tile ID is missed). 
-    number_of_beams   : The number of beams per SB. Most relevant for phased arrays. For POSSUM, we 
-                        have 36 beams.
-    outfile_prefix    : The prefix name to use for the output csvs files (include a path also, if not the 
-                        files will be stored in your current directory).
+    beam_sample_points: Sampling the circumference of the beam. Used for determining pixel 
+                        locations (ensures that no tile ID is missed). 
+    number_of_beams   : The number of beams per SB. Most relevant for phased arrays. 
+                        For POSSUM, we have 36 beams.
+    outfile_prefix    : The prefix name to use for the output csvs files (include a path also, 
+                        if not the files will be stored in your current directory).
     generate_ds9regions: if true, generate a DS9-suitable region file for the SB. 
      
     
@@ -65,14 +66,15 @@
 	        only be generated when multiple SBs are provided. See (ii).
 									  
 
-#### Config_Tiling.json input Json Definitions:
+#### Config_Tiling.json Input Definitions:
 
      input_image: Information about the input image. Insert path and name (below).
          path: 
          name: 
 		 
-    input_tile_config: CSV file containing tile ID, CRPIX1/2 information. Specify the path and name to 
-                       these files (below). Note: The input csv file must take the format: 'filename_SBID.csv'. 
+    input_tile_config: CSV file containing tile ID, CRPIX1/2 information. 
+                       Specify the path and name to these files (below). Note: 
+		       The input csv file must take the format: 'filename_SBID.csv'. 
 		       We use this file to also extract SBID. 
         path:
         SB_tile:
@@ -83,9 +85,9 @@
         cdelt: Tile pixel sample. Should be the same as tile_cdelt in Config_SkyMapTiles.json.
         fits_prefix: The prefix to give the resulting tile images.         
 			The output tile names take the form: 
-			'fits_prefix-SBID-TileID.fits.     
-			The stokes parameter is obtained from the input fits header with crval3/4: 1 is I, 
-			2 is Q, 3 is U and 4 is V.
+		       'fits_prefix-SBID-TileID.fits.     
+			The stokes parameter is obtained from the input fits header
+                    with crval3/4: 1 is I, 2 is Q, 3 is U and 4 is V.
 					 
 					 
 
