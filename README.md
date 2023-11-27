@@ -1,6 +1,7 @@
 # SkyTiles
 
 #### Purpose : Extract tiles IDs for specific SBs and generate tile images.
+    NB: The scripts are currently suitable for ASKAP fits data. 
 
 #### Definitions of Scripts: 
 
@@ -15,7 +16,17 @@
 			   and the last file contains tiles IDs requiring multiple 
                        SBs to be complete. 
 
-	PyTiling.py      : The actual script for generating the tile images.   
+	PyTiling.py      : The actual script for generating tile images. This script creates 
+                        tiles using Montage. After several test, we wouldn't recommend using 
+			    Montage for radio images, instead use CASA tiling (casa_tiling.py).      
+
+    casa_tiling.py   : The actual script for generating tile images. This script uses CASA
+	                  (previously known as CASAPY) to generate the tiles. CASA function 
+		          called imregrid is used for tiling (interpolation='cubic'). CASA
+	                  works well with our radio data.
+
+    renaming_tiles.py: Script used to rename tiles fits data to a format agreed upon by the team:
+	                   prefix_cenfreq_resol_RADEC_tileID_Stokes_version.fits
 	
 	Config_SkyMapTiles.json: Input to PyMapSkyTiles.py. This file contains the configurations 
                              needed for running PyMapSkyTiles.py, such as directory,
@@ -27,12 +38,14 @@
 #### The scripts are executed as follows:
 	
 	
-	#./PyMapSkyTiles.py -j Config_SkyMapTiles.py
+	#./PyMapSkyTiles.py -j Config_SkyMapTiles.json
 							
-	#./PyTiling.py -j Config_Tiling.py
+	#./PyTiling.py -j Config_Tiling.json	
+  
+    #./rename_tiles.py -i image.fits -pf PSM_pilot1 -v v2 -mfs
 							
 
-#### Config_SkyMapTiles.json Input  Definitions:
+#### Config_SkyMapTiles.json Input Definitions and PyMapSkyTiles.py outputs:
 
     path_footprints   : Path to footprints.
     run_all_footprints: true/false. If true, look inside path_footprints and extract tile 
@@ -89,5 +102,14 @@
 			The stokes parameter is obtained from the input fits header
                     with crval3/4: 1 is I, 2 is Q, 3 is U and 4 is V.
 					 
-					 
+
+#### Rename_tiles Input Definitions:
+
+    -i:   user must provide path and name of input image to rename.
+    -pf:  user must provide path and prefix name to use for the output image. 
+          If no path is provided, the fits file will be saved in the current directory.
+    -v:   You can specify the version number of the output e.g v1 for version 1.
+    -mfs: If file is MFS, you need to use this paramter indicate this. This ensures that
+           the extension 't0' is added to the file name, and that the central frequency is 
+           calculated accurately.
 
