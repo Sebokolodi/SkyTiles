@@ -36,11 +36,14 @@
                          is specifically for configuring PyTilling.py.   
 
 #### The scripts are executed as follows:
-	
-	
+
 	#./PyMapSkyTiles.py -j Config_SkyMapTiles.json
 							
 	#./PyTiling.py -j Config_Tiling.json	
+
+    # casa -c ./casa_tiling.py  -h  (option 1: if you installed CASA all inclusive version) 
+    
+    #./casa_tiling.py -h (option 2: if you installed CASA modular version) 
   
     #./rename_tiles.py -i image.fits -pf PSM_pilot1 -v v2 -mfs
 							
@@ -77,6 +80,21 @@
     iii) csv file containing tile IDs of the tiles needing more than a single SB to be complete. 
             The output name takes the form: 'output_prefix_REPEAT.csv'. This file will 
 	        only be generated when multiple SBs are provided. See (ii).
+
+     NB: Note that a file containing footprints (beam centres) is generated separately using ASKAP 
+     tools called aces-aps. You may need an account to install this package. The tool repository can
+     be found at  ssh://git@bitbucket.csiro.au:7999/aces/aces-apps.git and the documentation here: 
+     https://bitbucket.csiro.au/projects/ACES/repos/aces-apps/browse. For assitance in installing this, 
+     contact ASKAP directory (or ask POSSUM members involved with ASKAP software).
+
+     Once you have it installed, you can simply run it using for example:
+     # ./footprint-plan.py -n ak:square_6x6 -p 0.90 -a 0 -r 12.5,-52.5 -o possum_full_survery -f ds9 -w 0.90
+
+     where -n is Name of footprint, -p is pitch angle, -a is Position angle of footprint (degrees, you need to 
+     add 45 degrees to the rotation value), -r is observation RA and Dec, -o output filename, 
+     -f format (e.g. ds9), -w Beam FWHM used in overlay files (degrees).  The information about observation
+     RA, Dec, PA and name, can we found in a csv file generated for observation scheduling (see TG1 leads).
+  
 									  
 
 #### Config_Tiling.json Input Definitions:
@@ -102,6 +120,23 @@
 			The stokes parameter is obtained from the input fits header
                     with crval3/4: 1 is I, 2 is Q, 3 is U and 4 is V.
 					 
+
+#### CASA Tiling Input Definitions
+
+    -h, --help   show this help message and exit
+    -i OBS_ID    Observation ID (e.g. 2156-54. It will be used on the filename. 
+                  You can use anything e.g. SB ID such as 10040).
+    -c CUBE      Image cube (or an MFS image) you want to tile. 
+    -m MAP       Tiling map for the image cube [csv]. This is an csv contains the coordinates  
+                 CRVAL1/2 and CRPIX1/2 values of the tiles.Example is provided, see PoSSUM-TileConfig-2156-54.csv.
+    -o OUTPUT    Output write directory for tiles cubes/images.
+    -t TEMPLATE  The template fits file. This is required (and is provided see tile-template.fits). This contains 
+                 the header for a specific tile setting. In this case, it is for naxis=2048, NSIDE of 32, pixel
+		     size of 3.2''. If a different tile settings are required, a user need to generate these themselves,
+                 either using PyMapSkyTile and PyTiling.
+    -n NAXIS     tile naxis. In this case 2048. If you change this, you may need to change csv file coordinates using
+                 PyMapSkyTiles, and template fits using PyTiling.
+    -p PREFIX    Prefix for output tile filenames
 
 #### Rename_tiles Input Definitions:
 
