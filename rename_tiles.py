@@ -188,18 +188,21 @@ def name(fitsimage, prefix, version="v1", mfs=False):
     h, hm, hs = c.ra.hms
     hmhs = "%s" % round(hm + (hs / 60.0))
     hmhs = hmhs.zfill(2)
-    hm = "%d%s" % (h, hmhs)
+    hm = f"{int(h):02d}{hmhs}"
+    
 
     d, dm, ds = c.dec.dms
     # if dec is in the southern sky leave as is. If northen add a +.
     dmds = "%s" % round(abs(dm) + (abs(dm) / 60.0))
     dmds = dmds.zfill(2)
-    if d < 0:
-        dm = "%d%s" % (d, dmds)
-    if d > 0:
-        dm = "+%d%s" % (d, dmds)
+    dm = f"{int(d):02d}{dmds}"
+    if (c.dec < 0) and (dm[0] != '-'):
+        dm = '-'+dm
+    if c.dec > 0:
+        dm = "+" + dm
 
     RADEC = "%s%s" % (hm, dm)
+
 
     if mfs:
         outname = (
