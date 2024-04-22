@@ -195,7 +195,7 @@ def name(fitsimage, prefix, version="v1", mfs=False):
     # if dec is in the southern sky leave as is. If northen add a +.
     dmds = "%s" % round(abs(dm) + (abs(dm) / 60.0))
     dmds = dmds.zfill(2)
-    dm = f"{int(d):02d}{dmds}"
+    dm = f"{abs(int(d)):02d}{dmds}"
     if (c.dec < 0) and (dm[0] != '-'):
         dm = '-'+dm
     if c.dec > 0:
