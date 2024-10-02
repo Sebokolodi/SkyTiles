@@ -77,26 +77,29 @@ def points_within_circle(x0, y0, radius, num_points=4):
     angle = numpy.linspace(0, 360, num_points)
     angle = numpy.deg2rad(angle)
     
-    if len(x0) and len(y0) > 1:
-        x_corners = []
-        y_corners = []
+    if isinstance(x0, list):
+        ra_corners = []
+        dec_corners = []
         for (x_0, y_0) in zip(x0, y0):
-            x_corners.append( radius * numpy.cos(angle) + x_0 )
-            y_corners.append( radius * numpy.sin(angle) + y_0 )
+            
+            declination = radius * numpy.sin(angle) + y_0 
+            dec_corners.append( declination )
+            ra_corners.append( (radius * numpy.cos(angle))/numpy.cos(numpy.deg2rad(declination)) + x_0 )
+                   
     else:
-        x_corners =  radius * numpy.cos(angle) + x0
-        y_corners =  radius * numpy.sin(angle) + y0
+        dec_corners = radius * numpy.sin(angle) + y0 
+        ra_corners =  (radius * numpy.cos(angle))/numpy.cos(numpy.deg2rad(dec_corners)) + x0 
+       
         
     
-    x_corners = numpy.asarray(x_corners)
-    y_corners = numpy.asarray(y_corners)
+    ra_corners = numpy.asarray(ra_corners)
+    dec_corners = numpy.asarray(dec_corners)
     
-    x_corners = x_corners.flatten()
-    y_corners = y_corners.flatten()
-     
-    ind = numpy.where(abs(y_corners) <=90)[0]
+    ra_corners = ra_corners.flatten()
+    dec_corners = dec_corners.flatten()
+
             
-    return x_corners[ind], y_corners[ind]
+    return ra_corners, dec_corners
 
 
 def get_HealPix_Tiles(ra_deg, dec_deg):
