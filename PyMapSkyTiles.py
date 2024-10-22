@@ -236,7 +236,7 @@ def HPX_in_degrees(HPX, HPX_wcs):
         hpx_ra.append(HPX_RA)
         hpx_dec.append(HPX_DEC)
              
-    return crpix_ra, crpix_dec, hpx_ra, hpx_dec
+    return crpix_ra, crpix_dec, hpx_ra, hpx_dec    
 
 
 
@@ -316,7 +316,7 @@ if __name__ == "__main__":
             
 
         beam_x_corner_sample, beam_y_corner_sample = points_within_circle(
-                  x_deg, y_deg, beam_radius, num_points=beam_sample_points)
+                  x_deg, y_deg, beam_radius, beam_sample_points)
         
         HealPixels = get_HealPix_Tiles(ra_deg=beam_x_corner_sample, dec_deg=beam_y_corner_sample)
      
@@ -358,7 +358,9 @@ if __name__ == "__main__":
     SBs_HPX = []
 
     if generate_ds9regions:
-        generate_DS9_polygons(healpix_pixel=HPX_PIXELS, nside=Nside, outname_prefix=outfile_json_prefix)    
+        for i in range(len(HPX_ID)):
+             generate_DS9_polygons(healpix_pixel=HPX_Pixels[i], nside=Nside,
+              outname_prefix=outfile_json_prefix + '_%s'%footprints_ID[i])    
    
     for hpxs in HPX_PIXELS:
         for SBid in HPX_ID:
@@ -423,6 +425,7 @@ if __name__ == "__main__":
 
         writer_single.writerow(csv_header_single)
         writer_single.writerows(data_single) 
+        
 
 
     
