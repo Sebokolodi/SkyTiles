@@ -144,7 +144,7 @@ def generate_DS9_polygons(healpix_pixel, nside, outname_prefix ):
     third_line = 'fk5 \n'
     
     SB = outname_prefix
-    region_file = open('%s-boundary-%d.reg'%(SB, nside), 'w')
+    region_file = open('%s-tile_boundaries.reg'%(SB), 'w')
 
     region_file.write(first_line)
     region_file.write(second_line)
@@ -154,7 +154,7 @@ def generate_DS9_polygons(healpix_pixel, nside, outname_prefix ):
         region_file.write(region +' \n')
     region_file.close()
 
-    center_file = open('%s-center-%d.reg'%(SB, nside), 'w')
+    center_file = open('%s-tile_centers.reg'%(SB), 'w')
     center_file.write(first_line)
     center_file.write(second_line)
     center_file.write(third_line)
@@ -162,7 +162,33 @@ def generate_DS9_polygons(healpix_pixel, nside, outname_prefix ):
     for center in centers:
         center_file.write(center +' \n')
     center_file.close()
+
     
+   
+def make_circle_region(ra, dec, radius, outprefix, color='black'):
+    
+    circles = []
+    for (x0, y0) in zip(ra, dec):
+        circle_string = 'circle(%f, %f, %f)'%(x0, y0, radius)
+        circles.append(circle_string)
+        
+        
+    first_line = "#Region file format: DS9 version 4.1 \n"
+    second_line = 'global color=%s dashlist=8 3 width=2 font="helvetica 10 normal roman" \
+    select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1 \n'%color
+    third_line = 'ICRS \n'
+    
+
+    circle_file = open('%s-circle.reg'%outprefix, 'w')
+    circle_file.write(first_line)
+    circle_file.write(second_line)
+    circle_file.write(third_line)
+
+    for circle in circles:
+        circle_file.write(circle +' \n')
+    circle_file.close()
+   
+   
     
 
 def reference_header(naxis, cdelt):
@@ -314,6 +340,9 @@ if __name__ == "__main__":
             y_deg = [ footprint_region[1][i].split(',')[1] for i in range(number_of_beams)]
             x_deg, y_deg = get_deg(x_deg, y_deg)
             
+        if generate_ds9regions:
+             outname =  outfile_json_prefix + '_'+ footprint.split('_')[-1].split('.')[0] + '_%.2fd'%beam_radius
+             make_circle_region(ra=x_deg, dec=y_deg, radius=beam_radius, outprefix=outname, color='black')
 
         beam_x_corner_sample, beam_y_corner_sample = points_within_circle(
                   x_deg, y_deg, beam_radius, beam_sample_points)
@@ -336,7 +365,7 @@ if __name__ == "__main__":
     
     for i in range(len(HPX_ID)):        
 
-        csv_tile_output =  outfile_json_prefix + '_%s.csv'%footprints_ID[i]
+        csv_tile_output =  outfile_json_prefix + '_%s'%footprints_ID[i] +  '_%.2fd'%beam_radius + '.csv'
         
         with open(csv_tile_output, 'w', newline='') as f:
             writer = csv.writer(f)
@@ -359,8 +388,9 @@ if __name__ == "__main__":
 
     if generate_ds9regions:
         for i in range(len(HPX_ID)):
-             generate_DS9_polygons(healpix_pixel=HPX_Pixels[i], nside=Nside,
-              outname_prefix=outfile_json_prefix + '_%s'%footprints_ID[i])    
+             generate_DS9_polygons(healpix_pixel=HPX_Pixels[i], nside=Nside, 
+             outname_prefix=outfile_json_prefix + '_%s'%footprints_ID[i] + '_%.2fd'%beam_radius)    
+            
    
     for hpxs in HPX_PIXELS:
         for SBid in HPX_ID:
@@ -368,7 +398,7 @@ if __name__ == "__main__":
                 SBs_HPX.append((hpxs))
                 SBsID.append(SBid)    
             
-    csv_repeat_tiles = outfile_json_prefix + '_REPEAT.csv'
+    csv_repeat_tiles = outfile_json_prefix + '_REPEAT' +  '_%.2fd'%beam_radius + '.csv'
     
     with open(csv_repeat_tiles, 'w', newline='') as f:
         writer = csv.writer(f)
@@ -401,7 +431,7 @@ if __name__ == "__main__":
         writer.writerows(data)    
   
   
-    csv_single_tiles = outfile_json_prefix + '_SINGLE.csv' 
+    csv_single_tiles = outfile_json_prefix + '_SINGLE' +  '_%.2fd'%beam_radius + '.csv' 
     
     with open(csv_single_tiles, 'w', newline='') as s:
         writer_single = csv.writer(s)
